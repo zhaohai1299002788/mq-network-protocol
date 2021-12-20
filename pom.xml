@@ -26,7 +26,7 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>com.zhaohai.rocketmq.network.protocol</groupId>
+                <groupId>com.zhaohai.mq.network.protocol</groupId>
                 <artifactId>rocketmq-http</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
