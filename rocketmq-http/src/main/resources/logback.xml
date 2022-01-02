@@ -3,7 +3,7 @@
     <include resource="org/springframework/boot/logging/logback/base.xml"/>
     <contextName>logback</contextName>
 
-    <property name="log_path" value="/log"/><!-- 如果在Windows环境下使用/开头的路径，将会被指定到项目所在的盘符 -->
+    <property name="log_path" value="${user.home}/logs/"/><!-- 如果在Windows环境下使用/开头的路径，将会被指定到项目所在的盘符 -->
     <!-- %d{yyyy-MM-dd HH:mm:ss.SSS}：日志输出时间，精确到分按天切割； -->
     <!-- %-5level：日志级别，并且使用5个字符靠左对齐； %thread：输出日志的进程名字 -->
     <!-- %logger{50}：日志输出者的名字； %msg：日志消息； %n：换行符 -->
