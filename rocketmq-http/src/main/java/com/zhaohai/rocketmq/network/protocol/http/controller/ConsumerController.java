@@ -2,8 +2,10 @@ package com.zhaohai.rocketmq.network.protocol.http.controller;
 
 
 import com.zhaohai.rocketmq.network.protocol.http.request.ConsumerRequestMessage;
+import com.zhaohai.rocketmq.network.protocol.http.request.DeleteRequestMessage;
 import com.zhaohai.rocketmq.network.protocol.http.service.ConsumerService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,6 +23,11 @@ public class ConsumerController {
     @GetMapping("consumeMessage")
     public Boolean consumeMessage(ConsumerRequestMessage consumerRequestMessage) {
         return consumerService.consumeMessage(consumerRequestMessage).isPresent();
+    }
+
+    @DeleteMapping("deleteMessage")
+    public Boolean deleteMessage(DeleteRequestMessage deleteRequestMessage) {
+        return null;
     }
 
 }

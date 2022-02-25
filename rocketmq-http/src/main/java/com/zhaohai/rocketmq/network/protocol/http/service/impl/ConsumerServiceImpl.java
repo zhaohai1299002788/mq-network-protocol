@@ -8,7 +8,6 @@ import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,8 +17,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ConsumerServiceImpl implements ConsumerService {
 
     private static final Map<ConsumerRequestMessage, DefaultMQPushConsumer> consumerMap = new ConcurrentHashMap<>(64);
-    @Resource
-    private DefaultMessageListener defaultMessageListener;
 
     @Override
     public Optional<Boolean> consumeMessage(ConsumerRequestMessage consumerRequestMessage) {
@@ -39,6 +36,7 @@ public class ConsumerServiceImpl implements ConsumerService {
         DefaultMQPushConsumer consumer = new DefaultMQPushConsumer();
         consumer.setNamesrvAddr(consumerRequestMessage.getNameSrvAddr());
         consumer.setConsumerGroup(consumerRequestMessage.getGroupId());
+        DefaultMessageListener defaultMessageListener = new DefaultMessageListener(consumerRequestMessage.getGroupId());
         consumer.setMessageListener(defaultMessageListener);
         consumer.subscribe(consumerRequestMessage.getTopic(), consumerRequestMessage.getTag());
         consumer.start();
