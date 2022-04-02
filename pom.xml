@@ -4,15 +4,15 @@
     <modelVersion>4.0.0</modelVersion>
     <packaging>pom</packaging>
     <modules>
-        <module>rocketmq-http</module>
-        <module>rocketmq-mqtt</module>
-        <module>rocketmq-websocket</module>
+        <module>rocketmq-http-hbase</module>
+        <module>rocketmq-http-mysql</module>
+        <module>rocketmq-http-redis</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.6.0</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <relativePath/>
     </parent>
     <groupId>com.zhaohai.mq.network.protocol</groupId>
     <artifactId>mq-network-protocol</artifactId>
@@ -27,7 +27,12 @@
         <dependencies>
             <dependency>
                 <groupId>com.zhaohai.mq.network.protocol</groupId>
-                <artifactId>rocketmq-http</artifactId>
+                <artifactId>rocketmq-http-mysql</artifactId>
+                <version>0.0.1-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.zhaohai.mq.network.protocol</groupId>
+                <artifactId>rocketmq-http-hbase</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
