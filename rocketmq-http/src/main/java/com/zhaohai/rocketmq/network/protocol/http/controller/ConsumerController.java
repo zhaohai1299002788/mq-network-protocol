@@ -1,6 +1,7 @@
 package com.zhaohai.rocketmq.network.protocol.http.controller;
 
 
+import com.zhaohai.rocketmq.network.protocol.http.entity.MessageData;
 import com.zhaohai.rocketmq.network.protocol.http.request.ConsumerRequestMessage;
 import com.zhaohai.rocketmq.network.protocol.http.request.DeleteRequestMessage;
 import com.zhaohai.rocketmq.network.protocol.http.service.ConsumerService;
@@ -11,6 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RequestMapping(value = "consumer")
@@ -21,13 +25,14 @@ public class ConsumerController {
     private ConsumerService consumerService;
 
     @GetMapping("consumeMessage")
-    public Boolean consumeMessage(ConsumerRequestMessage consumerRequestMessage) {
-        return consumerService.consumeMessage(consumerRequestMessage).isPresent();
+    public List<MessageData> consumeMessage(ConsumerRequestMessage consumerRequestMessage) {
+        final Optional<List<MessageData>> messageData = consumerService.consumeMessage(consumerRequestMessage);
+        return messageData.orElseGet(ArrayList::new);
     }
 
     @DeleteMapping("deleteMessage")
     public Boolean deleteMessage(DeleteRequestMessage deleteRequestMessage) {
-        return null;
+        return consumerService.deleteMessage(deleteRequestMessage).isPresent();
     }
 
 }

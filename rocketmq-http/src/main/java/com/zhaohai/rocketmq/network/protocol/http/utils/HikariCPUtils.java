@@ -2,11 +2,13 @@ package com.zhaohai.rocketmq.network.protocol.http.utils;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import com.zhaohai.rocketmq.network.protocol.http.entity.MessageData;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.*;
+import java.sql.Date;
 import java.util.*;
 
 @Slf4j
@@ -158,23 +160,14 @@ public class HikariCPUtils {
     }
 
     /**
-     * DML操作，增删改操作
-     * @param sql
-     * @return
-     */
-    public static int excuteUpdate(String sql) {
-        return excuteUpdate(sql, null);
-    }
-
-    /**
      * DML操作，增删改操作,传递一个参数
      * @param sql
      * @return
      */
-    public static int excuteUpdate(String sql,Object obj) {
-        Object[] objs=new Object[1];
-        objs[0]=obj;
-        return excuteUpdate(sql, objs);
+    public static int excuteUpdate(String sql,MessageData messageData) {
+        List<MessageData> messageDataList = new ArrayList<>();
+        messageDataList.add(messageData);
+        return excuteUpdate(sql, messageDataList);
     }
 
     /**
@@ -182,23 +175,28 @@ public class HikariCPUtils {
      * @param sql
      * @return
      */
-    public static int excuteUpdate(String sql,Object[] params) {
+    public static int excuteUpdate(String sql, List<MessageData> messageDataList) {
         int rtn = 0;
         Connection connection=null;
         PreparedStatement ps = null;
 
         try {
             connection=getConnection();
-            ps=connection.prepareStatement(sql);
-            connection.setAutoCommit(false);
-            if(params != null && params.length > 0) {
-                for(int i = 0; i < params.length; i++) {
-                    ps.setObject(i + 1, params[i]);
-                }
+            for(MessageData messageData : messageDataList) {
+                ps=connection.prepareStatement(sql);
+                connection.setAutoCommit(false);
+                ps.setDate(1, new Date(messageData.getCreateDate().getTime()));
+                ps.setDate(2, new Date(messageData.getUpdateDate().getTime()));
+                ps.setDate(3, new Date(messageData.getConsumeSiteDate().getTime()));
+                ps.setInt(4, messageData.getIsDeleted());
+                ps.setString(5, messageData.getTopic());
+                ps.setString(6, messageData.getGroupId());
+                ps.setString(7, messageData.getKey());
+                ps.setString(8, messageData.getTag());
+                ps.setString(9, messageData.getMessagId());
+                ps.setString(10, messageData.getMessage());
+                rtn = ps.executeUpdate();
             }
-
-            rtn = ps.executeUpdate();
-
             connection.commit();
         } catch (Exception e) {
             e.printStackTrace();

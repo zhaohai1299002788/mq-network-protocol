@@ -1,13 +1,21 @@
 package com.zhaohai.rocketmq.network.protocol.http.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.zhaohai.rocketmq.network.protocol.http.dao.MessageDataMapper;
+import com.zhaohai.rocketmq.network.protocol.http.entity.MessageData;
 import com.zhaohai.rocketmq.network.protocol.http.listeners.DefaultMessageListener;
 import com.zhaohai.rocketmq.network.protocol.http.request.ConsumerRequestMessage;
+import com.zhaohai.rocketmq.network.protocol.http.request.DeleteRequestMessage;
 import com.zhaohai.rocketmq.network.protocol.http.service.ConsumerService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.client.exception.MQClientException;
+import org.springframework.beans.BeanUtils;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,18 +26,51 @@ public class ConsumerServiceImpl implements ConsumerService {
 
     private static final Map<ConsumerRequestMessage, DefaultMQPushConsumer> consumerMap = new ConcurrentHashMap<>(64);
 
+    @Resource
+    private MessageDataMapper messageDataMapper;
+
     @Override
-    public Optional<Boolean> consumeMessage(ConsumerRequestMessage consumerRequestMessage) {
+    public Optional<List<MessageData>> consumeMessage(ConsumerRequestMessage consumerRequestMessage) {
         try {
             initDefaultMQPushConsumer(consumerRequestMessage);
+            QueryWrapper<MessageData> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("topic", consumerRequestMessage.getTopic())
+                    .eq("nameSrvAddr", consumerRequestMessage.getNameSrvAddr())
+                    .eq("instanceId", consumerRequestMessage.getInstanceId())
+                    .eq("groupId", consumerRequestMessage.getGroupId()).eq("tag", consumerRequestMessage.getTag());
+            final List<MessageData> messageData = messageDataMapper.selectList(queryWrapper);
+            return Optional.of(messageData);
         } catch (Exception e) {
             log.error("ConsumerServiceImpl consumeMessage error => ", e);
-            return Optional.of(Boolean.FALSE);
         }
-        return Optional.of(Boolean.TRUE);
+        return Optional.empty();
     }
 
-    private void initDefaultMQPushConsumer(ConsumerRequestMessage consumerRequestMessage) throws MQClientException {
+    @Override
+    public Optional<Boolean> deleteMessage(DeleteRequestMessage deleteRequestMessage) {
+        try {
+            QueryWrapper<MessageData> dataQueryWrapper = new QueryWrapper<>();
+            dataQueryWrapper.eq("topic", deleteRequestMessage.getTopic())
+                    .eq("nameSrvAddr", deleteRequestMessage.getNameSrvAddr())
+                    .eq("instanceId", deleteRequestMessage.getInstanceId())
+                    .eq("groupId", deleteRequestMessage.getGroupId())
+                    .eq("tag", deleteRequestMessage.getTag())
+                    .eq("messagId", deleteRequestMessage.getMessageId());
+            MessageData messageData = new MessageData();
+            BeanUtils.copyProperties(deleteRequestMessage, messageData);
+            messageData.setIsDeleted(1);
+            final int update = messageDataMapper.update(messageData, dataQueryWrapper);
+            if (update == 1) {
+                return Optional.of(Boolean.TRUE);
+            }
+        } catch (Exception e) {
+            log.error("ConsumerServiceImpl deleteMessage error =》 ", e);
+        }
+        return Optional.empty();
+    }
+
+    @Async("taskExecutor")
+    public void initDefaultMQPushConsumer(ConsumerRequestMessage consumerRequestMessage) throws MQClientException {
         if (consumerMap.get(consumerRequestMessage) != null) {
             return;
         }

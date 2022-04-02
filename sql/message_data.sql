@@ -1,37 +1,37 @@
 /*
- Navicat Premium Data Transfer
+Navicat MySQL Data Transfer
 
- Source Server         : localhost_3307
- Source Server Type    : MariaDB
- Source Server Version : 100605
- Source Host           : localhost:3307
- Source Schema         : rocketmq-http
+Source Server         : localhost
+Source Server Version : 50505
+Source Host           : localhost:3306
+Source Database       : mq-http
 
- Target Server Type    : MariaDB
- Target Server Version : 100605
- File Encoding         : 65001
+Target Server Type    : MYSQL
+Target Server Version : 50505
+File Encoding         : 65001
 
- Date: 20/12/2021 08:06:34
+Date: 2022-04-02 12:00:43
 */
 
-SET NAMES utf8mb4;
-SET FOREIGN_KEY_CHECKS = 0;
+SET FOREIGN_KEY_CHECKS=0;
 
 -- ----------------------------
 -- Table structure for message_data
 -- ----------------------------
 DROP TABLE IF EXISTS `message_data`;
-CREATE TABLE `message_data`  (
-  `messag_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
-  `topic` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
-  `tag` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_german2_ci NOT NULL DEFAULT '',
+CREATE TABLE `message_data` (
+  `id` bigint(20) unsigned zerofill NOT NULL AUTO_INCREMENT,
+  `create_date` datetime NOT NULL,
+  `update_date` datetime NOT NULL,
+  `consume_site_date` datetime NOT NULL,
+  `is_deleted` int(10) unsigned zerofill NOT NULL,
+  `name_srv_addr` varchar(255) CHARACTER SET utf8 NOT NULL DEFAULT '',
+  `instance_id` varchar(255) CHARACTER SET utf8 NOT NULL DEFAULT '',
+  `topic` varchar(255) NOT NULL DEFAULT '',
   `group_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_german2_ci NOT NULL DEFAULT '',
-  `create_date` datetime(0) NOT NULL,
-  `update_date` datetime(0) NOT NULL,
-  `is_deleted` int(10) UNSIGNED ZEROFILL NOT NULL,
-  `message` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
-  `id` bigint(20) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT,
+  `messag_id` varchar(255) NOT NULL DEFAULT '',
+  `tag` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_german2_ci NOT NULL DEFAULT '',
+  `key` varchar(255) NOT NULL DEFAULT '',
+  `message` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
-
-SET FOREIGN_KEY_CHECKS = 1;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
