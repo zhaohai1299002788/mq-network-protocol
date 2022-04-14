@@ -5,7 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-@MapperScan("com.zhaohai.rocketmq.network.protocol.http.dao")
+@MapperScan("com.zhaohai.rocketmq.network.protocol.mysql.dao")
 public class RocketmqHttpMySQLApplication {
 
     public static void main(String[] args) {
